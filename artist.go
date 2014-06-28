@@ -1,6 +1,6 @@
 package spotifyweb
 
-type ArtistSimplified struct {
+type ArtistSimple struct {
 	ExternalUrls ExternalUrl
 	Href,
 	Id,
