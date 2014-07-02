@@ -3,6 +3,7 @@ package spotifyweb
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -11,12 +12,13 @@ type SpotifyWeb struct {
 	Endpoint,
 	ClientID,
 	Secret,
-	Token string
+	Token, Refresh string
 }
 
 //DoBasic provides basic API calls, no access token required.
 func (api *SpotifyWeb) DoBasic(call, method string, result interface{}) error {
 	url := api.Endpoint + call
+	fmt.Println(url)
 	client := &http.Client{}
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
@@ -29,6 +31,27 @@ func (api *SpotifyWeb) DoBasic(call, method string, result interface{}) error {
 	defer res.Body.Close()
 	err = json.NewDecoder(res.Body).Decode(&result)
 	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (api *SpotifyWeb) DoAuth(call, method string, result interface{}) error {
+	client := &http.Client{}
+	req, err := http.NewRequest(method, api.Endpoint+call, nil)
+	if err != nil {
+		fmt.Println("err1")
+		return err
+	}
+	req.Header.Set("Authorization", "Bearer "+api.Token)
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println("err2")
+		return err
+	}
+
+	if json.NewDecoder(res.Body).Decode(result) != nil {
+		fmt.Println("err3")
 		return err
 	}
 	return nil

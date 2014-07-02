@@ -5,7 +5,7 @@ type TrackSimple struct {
 	Disc        int `json:"disc_number"`
 	Duration    int `json:"duration_ms"` //The track lengths in milliseconds
 	Explcit     bool
-	ExternalUrl ExternalUrl
+	ExternalUrl map[string]string `json:"external_urls"`
 	Href        string
 	Id          string
 	Name        string
