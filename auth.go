@@ -2,10 +2,13 @@ package spotifyweb
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 type dataBack struct {
@@ -35,4 +38,28 @@ func (api SpotifyWeb) GetToken(code, callbackUrl string) (string, string, error)
 	var token dataBack
 	err = json.NewDecoder(res.Body).Decode(&token)
 	return token.Token, token.Refresh, err
+}
+
+func (api *SpotifyWeb) ReAuth(refreshToken string) (string, error) {
+	data := url.Values{
+		"grant_type":    []string{"refresh_token"},
+		"refresh_token": []string{refreshToken},
+	}
+	client := &http.Client{}
+	combined := strings.Join([]string{
+		api.ClientID,
+		api.Secret,
+	}, ":")
+
+	str := base64.StdEncoding.EncodeToString([]byte(combined))
+
+	req, err := http.NewRequest("POST", "https://accounts.spotify.com/api/token", bytes.NewBufferString(data.Encode()))
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
+	req.Header.Add("Authorization", "Basic "+str)
+	res, err := client.Do(req)
+	var token dataBack
+	err = json.NewDecoder(res.Body).Decode(&token)
+	fmt.Println(token)
+	return token.Token, err
 }

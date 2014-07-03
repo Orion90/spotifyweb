@@ -38,6 +38,7 @@ func (api *SpotifyWeb) DoBasic(call, method string, result interface{}) error {
 
 func (api *SpotifyWeb) DoAuth(call, method string, result interface{}) error {
 	client := &http.Client{}
+	fmt.Println(api.Endpoint + call)
 	req, err := http.NewRequest(method, api.Endpoint+call, nil)
 	if err != nil {
 		fmt.Println("err1")
@@ -49,8 +50,8 @@ func (api *SpotifyWeb) DoAuth(call, method string, result interface{}) error {
 		fmt.Println("err2")
 		return err
 	}
-
-	if json.NewDecoder(res.Body).Decode(result) != nil {
+	err = json.NewDecoder(res.Body).Decode(result)
+	if err != nil {
 		fmt.Println("err3")
 		return err
 	}
