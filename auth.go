@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
+	// "fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -60,6 +60,5 @@ func (api *SpotifyWeb) ReAuth(refreshToken string) (string, error) {
 	res, err := client.Do(req)
 	var token dataBack
 	err = json.NewDecoder(res.Body).Decode(&token)
-	fmt.Println(token)
 	return token.Token, err
 }

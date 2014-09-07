@@ -17,32 +17,29 @@ type Me struct {
 	ExternalUrls map[string]string
 	Images       []Image
 	Playlists    PlaylistPagingObject `json:"-"`
+	Api          SpotifyWeb           `json:"-"`
 }
 
-func (api SpotifyWeb) Profile() (Me, error) {
+func (api SpotifyWeb) Me() (Me, error) {
 	var me Me
 	err := api.DoAuth("me", "GET", &me)
-	me.GetPlayLists(api)
+	me.Api = api
+	me.GetPlayLists()
 	return me, err
 }
 
-func (me *Me) GetPlayLists(api SpotifyWeb) {
-	err := api.DoAuth("users/"+me.Id+"/playlists", "GET", &me.Playlists)
+func (me *Me) GetPlayLists() {
+	err := me.Api.DoAuth("users/"+me.Id+"/playlists", "GET", &me.Playlists)
 	if err != nil {
 		fmt.Println(err)
 	}
-	// var items []PlaylistSimple
-	// for _, pl := range me.Playlists.Items {
-	// 	if !pl.Collaborative {
-	// 		continue
-	// 	}
-
-	// 	data, err := pl.GetFullTracks(api, me.Id)
-	// 	pl.TrackData = data
-	// 	items = append(items, pl)
-	// 	if err != nil {
-	// 		fmt.Println(err)
-	// 	}
-	// }
-	// me.Playlists.Items = items
+	var items []PlaylistSimple
+	for _, pl := range me.Playlists.Items {
+		pl.Api = me.Api
+		items = append(items, pl)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+	me.Playlists.Items = items
 }

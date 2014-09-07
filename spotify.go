@@ -18,7 +18,6 @@ type SpotifyWeb struct {
 //DoBasic provides basic API calls, no access token required.
 func (api *SpotifyWeb) DoBasic(call, method string, result interface{}) error {
 	url := api.Endpoint + call
-	fmt.Println(url)
 	client := &http.Client{}
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
@@ -38,7 +37,6 @@ func (api *SpotifyWeb) DoBasic(call, method string, result interface{}) error {
 
 func (api *SpotifyWeb) DoAuth(call, method string, result interface{}) error {
 	client := &http.Client{}
-	fmt.Println(api.Endpoint + call)
 	req, err := http.NewRequest(method, api.Endpoint+call, nil)
 	if err != nil {
 		fmt.Println("err1")
